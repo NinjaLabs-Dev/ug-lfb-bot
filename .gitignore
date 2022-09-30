@@ -1,0 +1,6 @@
+.env
+lfb-bot-00cf901ff71c.json
+*.iml
+
+.idea
+node_modules

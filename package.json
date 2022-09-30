@@ -1,0 +1,22 @@
+{
+  "name": "lfb-discord-bot",
+  "version": "1.0.0",
+  "description": "Custom Bot for UG LFB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon --ignore 'tmp/*' index.js"
+  },
+  "author": "NinjaLabs-Dev",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "discord.js": "^14.5.0",
+    "dotenv": "^16.0.2",
+    "glob": "^8.0.3",
+    "google-spreadsheet": "^3.3.0",
+    "moment": "^2.29.4",
+    "nodemon": "^2.0.20",
+    "util": "^0.12.4"
+  }
+}
