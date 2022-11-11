@@ -38,7 +38,14 @@ client.on("interactionCreate", async (interaction) => {
 
 		if(hasPermission) {
 			console.log(`[INFO] ${getUserDisplayName(interaction)}: Ran ${interaction.commandName}`)
-			cmd.run(client, interaction, args);
+			try {
+				cmd.run(client, interaction, args);
+			} catch (e) {
+				return interaction.reply({
+					content: 'There was an issue doing this. Contact Support.',
+					ephemeral: true
+				})
+			}
 		} else {
 			return interaction.followUp({ content: "You do not have permission to do that.", ephemeral: true });
 		}
