@@ -35,8 +35,14 @@ module.exports = {
 		console.log(unitName);
 
 		let roster = await getRosterData();
-		console.log(roster.sheetsByTitle)
 		let sheet = await roster.sheetsByTitle[unitName];
+
+		if(!sheet) {
+			return interaction.reply({
+				content: "You don't seem to have a sheet on the roster. Contact Command",
+				ephemeral: true
+			})
+		}
 
 		let rows = await sheet.getRows({
 			offset: 8
