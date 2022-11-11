@@ -3,8 +3,8 @@ const commandType = require("../../commandTypes.json");
 const { getUnits, unitsLastUpdated, rankColors, trainings, log, getUser} = require('../../helpers');
 
 module.exports = {
-	name: 'info',
-	description: 'Check a users roster information',
+	name: 'file',
+	description: 'Check a users personal file',
 	type: commandType.CHAT_INPUT,
 	options: [
 		{

@@ -3,7 +3,9 @@ const axios = require("axios");
 const moment = require("moment");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const rosterCredentials = require("./lfb-bot-00cf901ff71c.json");
+const client = require('./index');
 let roster;
+let hr;
 
 let columns = {
 	"NAME": 0,
@@ -24,98 +26,76 @@ let columns = {
 	"TRAINER": 10
 }
 
+let trainingOffset = 6;
 let trainingColumns = {
 	"CALLSIGN": {
 		col: 0,
-		letter: 'B'
 	},
 	"DRIVING": {
-		col: 5,
-		letter: 'G'
+		col: trainingOffset,
 	},
 	"DRIVING_DATE": {
-		col: 6,
-		letter: 'H'
+		col: trainingOffset + 1,
 	},
 	"COMMS": {
-		col: 7,
-		letter: 'I'
+		col: trainingOffset + 2,
 	},
 	"COMMS_DATE": {
-		col: 8,
-		letter: 'J'
+		col: trainingOffset + 3,
 	},
 	"FIRSTAID": {
-		col: 9,
-		letter: 'K'
+		col: trainingOffset + 4,
 	},
 	"FIRSTAID_DATE": {
-		col: 10,
-		letter: 'L'
+		col: trainingOffset + 5,
 	},
 	"WATER": {
-		col: 11,
-		letter: 'M'
+		col: trainingOffset + 6,
 	},
 	"WATER_DATE": {
-		col: 12,
-		letter: 'N'
+		col: trainingOffset + 7,
 	},
 	"RTA": {
-		col: 14,
-		letter: 'P'
+		col: trainingOffset + 9,
 	},
 	"RTA_DATE": {
-		col: 15,
-		letter: 'Q'
+		col: trainingOffset + 10,
 	},
 	"ADVDRIVING": {
-		col: 16,
-		letter: 'R'
+		col: trainingOffset + 11,
 	},
 	"ADVDRIVING_DATE": {
-		col: 17,
-		letter: 'S'
+		col: trainingOffset + 12,
 	},
 	"COPILOT": {
-		col: 18,
-		letter: 'T'
+		col: trainingOffset + 13,
 	},
 	"COPILOT_DATE": {
-		col: 19,
-		letter: 'U'
+		col: trainingOffset + 14,
 	},
 	"PILOT": {
-		col: 20,
-		letter: 'V'
+		col: trainingOffset + 15,
 	},
 	"PILOT_DATE": {
-		col: 21,
-		letter: 'W'
+		col: trainingOffset + 16,
 	},
 	"DISPATCH": {
-		col: 23,
-		letter: 'Y'
+		col: trainingOffset + 18,
 	},
 	"DISPATCH_DATE": {
-		col: 24,
-		letter: 'Z'
+		col: trainingOffset + 19,
 	},
 	"FI": {
-		col: 25,
-		letter: 'AA'
+		col: trainingOffset + 20,
 	},
 	"FI_DATE": {
-		col: 26,
-		letter: 'AB'
+		col: trainingOffset + 21,
 	},
 	"SC": {
-		col: 27,
-		letter: 'AC'
+		col: trainingOffset + 22,
 	},
 	"SC_DATE": {
-		col: 28,
-		letter: 'AD'
+		col: trainingOffset + 23,
 	},
 }
 
@@ -150,8 +130,7 @@ let rankColors = {
 let units = [];
 let _unitsLastUpdated = null;
 
-// Sync units on startup
-authRoster();
+authSheets();
 
 // Sync units every 30 seconds
 setInterval(async () => {
@@ -182,10 +161,18 @@ async function syncUnits() {
 			_units.push({
 				row: i,
 				name: row['Full Name'],
-				callsign: row['Badge No.'],
+				callsign: row['Callsign'],
+				badge: row['Badge'],
 				rank: row['Rank'],
 				tenure: row['Tenure'],
-				training: unitTrainings
+				training: unitTrainings,
+				hr: {
+					citizen: 'Unknown',
+					bank: 'Unknown',
+					contact: 'Unknown',
+					birth: 'Unknown',
+					photo: 'Unknown'
+				}
 			});
 		}
 	})
@@ -193,8 +180,8 @@ async function syncUnits() {
 	let trainingRows = await roster.sheetsByTitle['Training Database'].getRows();
 
 	trainingRows.forEach(row => {
-		if(row['First Name']) {
-			let unit = _units.find(u => u.callsign === row['Badge No.'])
+		if(row['Badge']) {
+			let unit = _units.find(u => u.badge === row['Badge'])
 
 			if(unit) {
 				unit.training.forEach(unitTraining => {
@@ -203,6 +190,22 @@ async function syncUnits() {
 						unitTraining.date = row._rawData[trainingColumns[unitTraining.key + '_DATE'].col + 1];
 					}
 				})
+			}
+		}
+	})
+
+	let hrRows = await hr.sheetsByTitle['Personnel Info'].getRows();
+
+	hrRows.forEach(row => {
+		if(row['Badge']) {
+			let unit = _units.find(u => u.badge === row['Badge'])
+
+			if(unit) {
+				unit.hr.citizen = row['Citizen ID'];
+				unit.hr.bank = row['Bank Account'];
+				unit.hr.contact = row['Contact Number'];
+				unit.hr.birth = row['DOB'];
+				unit.hr.photo = row['Photo'];
 			}
 		}
 	})
@@ -251,17 +254,16 @@ function capitalizeFirstLetter(string) {
 async function assignTraining(row, training, interaction) {
 	let trainerColumn = training.name;
 	let dateColumn = training.name + ' Date';
-	let user = interaction.guild.members.cache.find(u => u.id === interaction.member.id);
-	let trainerName = user.displayName.match(/([^\]]+$)/);
-	if(!trainerName.length) {
+
+	let trainer = getUser(interaction.user.id, interaction);
+	if(!trainer) {
 		return interaction.reply({
-			content: "We couldn't find a callsign for that user.",
+			content: "There was an error doing this.",
 			ephemeral: true
 		})
 	}
-	trainerName = trainerName[0].slice(1);
 
-	await updateCell(trainerColumn, row, trainerName, "Training Database");
+	await updateCell(trainerColumn, row, `[${trainer.badge}] ${trainer.name}`, "Training Database");
 	await updateCell(dateColumn, row, moment().format('D/M/y'), "Training Database");
 }
 
@@ -278,18 +280,29 @@ async function removeTraining(row, training, interaction) {
 	await updateCell(dateColumn, row, '', "Training Database");
 }
 
-async function authRoster() {
+async function authSheets() {
 	const rosterCredentials = require('./lfb-bot-00cf901ff71c.json');
-	const doc = new GoogleSpreadsheet(process.env.SHEET_ID);
-	doc.useServiceAccountAuth(rosterCredentials).then(async () => {
-		roster = doc;
+	const rosterDoc = new GoogleSpreadsheet(process.env.SHEET_ID);
+	rosterDoc.useServiceAccountAuth(rosterCredentials).then(async () => {
+		roster = rosterDoc;
 		await roster.loadInfo();
-		console.log("[INFO] Successfully connected to google sheets!");
 
-		// Waits for connection and then syncs
-		syncUnits();
+		const hrDoc = new GoogleSpreadsheet(process.env.HR_SHEET_ID);
+
+		hrDoc.useServiceAccountAuth(rosterCredentials).then(async () => {
+			hr = hrDoc;
+			await hr.loadInfo();
+
+			console.log("[INFO] Successfully connected to google sheets - HR!");
+			return true;
+		}).catch(() => {
+			console.log("[ERROR] There was an issue connecting to google sheets - HR!")
+		});
+
+		console.log("[INFO] Successfully connected to google sheets! - Roster");
+		return true;
 	}).catch(() => {
-		console.log("[ERROR] There was an issue connecting to google sheets!")
+		console.log("[ERROR] There was an issue connecting to google sheets - Roster!")
 	});
 }
 
@@ -329,6 +342,42 @@ function getRosterData() {
 	return roster;
 }
 
+/**
+ * @param term string
+ * @param interaction { CommandInteraction }
+ */
+function getUser(term, interaction) {
+	if(term.includes('-')) {
+		let callsign = term.toUpperCase();
+		let unit = units.find(u => u.callsign === callsign);
+
+		return unit ?? false;
+	}
+
+	if(term.length === 18) {
+		let user = client.getDiscordUser(term, interaction.guild);
+
+		let _callsign = user.displayName.match(/(?<=\[).+?(?=\])/g);
+		if(_callsign.length) {
+			let unit = units.find(u => u.callsign === _callsign[0]);
+
+			return unit ?? false;
+		}
+
+		return false;
+	}
+
+	if(term.length === 3) {
+		let badge = term;
+		let unit = units.find(u => u.badge === badge);
+
+		return unit ?? false;
+	}
+
+	return false;
+}
+
+exports.getUser = getUser;
 exports.getUserDisplayName = getUserDisplayName;
 exports.rankColors = rankColors;
 exports.getUnits = getUnits;

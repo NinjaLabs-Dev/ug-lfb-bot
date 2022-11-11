@@ -15,9 +15,13 @@ module.exports = client;
 client.commands = new Collection();
 client.config = process.env;
 
-client.getUser = (id) => {
+client.getDiscordUser = (id, guild = false) => {
 	if(client.user.id === id) {
 		return false;
+	}
+
+	if(guild) {
+		return guild.members.cache.find(u => u.id === id && !u.bot && !u.system);
 	}
 
 	return client.users.cache.find(u => u.id === id && !u.bot && !u.system);

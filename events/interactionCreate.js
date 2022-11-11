@@ -6,6 +6,7 @@ client.on("interactionCreate", async (interaction) => {
 	if (interaction.isCommand()) {
 		// await interaction.deferReply({ ephemeral: false }).catch(() => {});
 
+
 		if(interaction.guild.id !== process.env.GUILD_ID) {
 			console.log(`[ERROR] Unknown server usage detected! ${interaction.guild.name} ${interaction.guild.id}`)
 			return;
