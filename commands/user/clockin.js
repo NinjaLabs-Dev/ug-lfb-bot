@@ -32,7 +32,6 @@ module.exports = {
 
 		let unitName = interaction.member.displayName.match(/([^\]]+$)/);
 		unitName = unitName[0].slice(1);
-		console.log(unitName);
 
 		let roster = await getRosterData();
 		let sheet = await roster.sheetsByTitle[unitName];
