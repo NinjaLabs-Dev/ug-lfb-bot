@@ -35,6 +35,7 @@ module.exports = {
 		console.log(unitName);
 
 		let roster = await getRosterData();
+		console.log(roster.sheetsByTitle)
 		let sheet = await roster.sheetsByTitle[unitName];
 
 		let rows = await sheet.getRows({
