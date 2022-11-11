@@ -7,6 +7,13 @@ module.exports = {
 	name: 'clockin',
 	description: 'Clock on duty',
 	type: commandType.CHAT_INPUT,
+	options: [
+		{
+			name: 'time',
+			type: commandType.args.STRING,
+			description: "The time of this (14:50)"
+		},
+	],
 	/**
 	 * @param {Client} client
 	 * @param {CommandInteraction} interaction
@@ -60,7 +67,7 @@ module.exports = {
 		date.value = moment().format('D/M/y');
 
 		let startTime = sheet.getCellByA1(`B${rowNumber}`);
-		startTime.value = moment().format('HH:mm');
+		startTime.value = args[0] ? args[0] : moment().format('HH:mm');
 
 		await sheet.saveUpdatedCells();
 

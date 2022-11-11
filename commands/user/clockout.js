@@ -7,6 +7,13 @@ module.exports = {
 	name: 'clockout',
 	description: 'Clock out duty',
 	type: commandType.CHAT_INPUT,
+	options: [
+		{
+			name: 'time',
+			type: commandType.args.STRING,
+			description: "The time of this (14:50)"
+		},
+	],
 	/**
 	 * @param {Client} client
 	 * @param {CommandInteraction} interaction
@@ -65,7 +72,7 @@ module.exports = {
 			})
 		}
 
-		endTime.value = moment().format('HH:mm');
+		endTime.value = args[0] ? args[0] : moment().format('HH:mm');
 
 		await sheet.saveUpdatedCells();
 
