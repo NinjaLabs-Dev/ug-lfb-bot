@@ -16,7 +16,7 @@ let columns = {
 	"COMMS": 15,
 	"FIRSTAID": 16,
 	"WATER": 17,
-	"RTA": 19,
+	"RTC": 19,
 	"ADVDRIVING": 20,
 	"COPILOT": 21,
 	"PILOT": 22,
@@ -55,10 +55,10 @@ let trainingColumns = {
 	"WATER_DATE": {
 		col: trainingOffset + 7,
 	},
-	"RTA": {
+	"RTC": {
 		col: trainingOffset + 9,
 	},
-	"RTA_DATE": {
+	"RTC_DATE": {
 		col: trainingOffset + 10,
 	},
 	"ADVDRIVING": {
@@ -104,7 +104,7 @@ let trainings = [
 	{ name: 'Comms', key: 'COMMS' },
 	{ name: 'First Aid', key: 'FIRSTAID' },
 	{ name: 'Water', key: 'WATER' },
-	{ name: 'RTA', key: 'RTA' },
+	{ name: 'RTC', key: 'RTC' },
 	{ name: 'Adv Driving', key: 'ADVDRIVING' },
 	{ name: 'Co-Pilot', key: 'COPILOT' },
 	{ name: 'Pilot', key: 'PILOT' },

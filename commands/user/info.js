@@ -54,7 +54,6 @@ module.exports = {
 			});
 		}
 
-		console.log(unit);
 		const fields = [
 			{ name: 'Callsign', value: unit.callsign, inline: true },
 			{ name: 'Badge', value: unit.badge, inline: true },
