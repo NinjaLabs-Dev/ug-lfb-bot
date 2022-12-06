@@ -267,10 +267,7 @@ function capitalizeFirstLetter(string) {
  * @param interaction {CommandInteraction}
 */
 async function assignTraining(unit, training, interaction) {
-	let unitColumn = "B";
-	let dateColumn = "C";
-	let trainerColumn = "D";
-	let trainingColumn = "E";
+	let columns = ['Unit', 'Training Date', 'Trainer', 'Training']
 
 	let trainer = getUser(interaction.user.id, interaction);
 	if(!trainer) {
@@ -286,28 +283,50 @@ async function assignTraining(unit, training, interaction) {
 	});
 
 	let rowNumber = 2;
-	let lastRow = rows[rows.length - 1];
-	if(lastRow) {
-		rowNumber = lastRow._rowNumber + 1;
-	}
+	let foundNumber = false
+	rows.forEach(row => {
+		if(!row['Unit'] && !foundNumber) {
+			console.log(row._rowNumber)
+			rowNumber = row._rowNumber;
+			foundNumber = true
+		}
+	})
 
-	await updateCell(unitColumn, rowNumber, `[${unit.badge}] ${unit.name}`, "Training History");
-	await updateCell(dateColumn, rowNumber, moment().format('D/M/y'), "Training History");
-	await updateCell(trainerColumn, rowNumber, `[${trainer.badge}] ${trainer.name}`, "Training History");
-	await updateCell(trainingColumn, rowNumber, training.name, "Training History");
+	await trainingSheet.loadCells(`A${rowNumber}:F${rowNumber}`);
+
+	let _unit = trainingSheet.getCellByA1(`B${rowNumber}`);
+	_unit.value = `[${unit.badge}] ${unit.name}`;
+
+	let date = trainingSheet.getCellByA1(`C${rowNumber}`);
+	date.value = moment().format('DD/M/y');
+
+	let _trainer = trainingSheet.getCellByA1(`D${rowNumber}`);
+	_trainer.value = `[${trainer.badge}] ${trainer.name}`;
+
+	let _training = trainingSheet.getCellByA1(`E${rowNumber}`);
+	_training.value = training.name;
+
+	await trainingSheet.saveUpdatedCells();
 }
 
 /**
- * @param row int
+ * @param unit array
  * @param training array
  * @param interaction {CommandInteraction}
  */
-async function removeTraining(row, training, interaction) {
-	let trainerColumn = training.name;
-	let dateColumn = training.name + ' Date';
+async function removeTraining(unit, training, interaction) {
+	let rows = await roster.sheetsByTitle['Training History'].getRows({ offset: 1 });
 
-	await updateCell(trainerColumn, row, '', "Training Database");
-	await updateCell(dateColumn, row, '', "Training Database");
+	rows.forEach(row => {
+		if(row['Unit'] === unit.nameBadge && row['Training'] === training.name) {
+			row['Unit'] = '';
+			row['Training Date'] = '';
+			row['Trainer'] = '';
+			row['Training'] = '';
+
+			row.save();
+		}
+	})
 }
 
 async function authSheets() {

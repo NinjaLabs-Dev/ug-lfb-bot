@@ -91,11 +91,10 @@ module.exports = {
 
 			let training = {};
 			unit.training.forEach(t => {
-				if(t.name.toUpperCase() === args[1].toUpperCase()) {
+				if(t.name.toUpperCase().replace(' ', '') === args[1].toUpperCase().replace(' ', '')) {
 					training = t;
 				}
 			})
-
 			let fields = [
 				{ name: 'Status', value: training.value === 'TRUE' ? 'Qualified' : 'Unqualified', inline: true },
 			];
@@ -144,7 +143,7 @@ module.exports = {
 
 			let training = {};
 			unit.training.forEach(t => {
-				if(t.name.toUpperCase() === args[1].toUpperCase()) {
+				if(t.name.toUpperCase().replace(' ', '') === args[1].toUpperCase().replace(' ', '')) {
 					training = t;
 				}
 			})
@@ -193,7 +192,7 @@ module.exports = {
 
 			let training = {};
 			unit.training.forEach(t => {
-				if(t.name.toUpperCase() === args[1].toUpperCase()) {
+				if(t.name.toUpperCase().replace(' ', '') === args[1].toUpperCase().replace(' ', '')) {
 					training = t;
 				}
 			})
@@ -218,7 +217,7 @@ module.exports = {
 					ephemeral: true
 				});
 			} else {
-				await assignTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
+				await removeTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
 			}
 
 			await log(`Removed ${training.name} from [${unit.callsign}] ${unit.name}`, interaction);
