@@ -16,7 +16,7 @@ let columns = {
 	"COMMS": 15,
 	"FIRSTAID": 16,
 	"WATER": 17,
-	"RTA": 19,
+	"RTC": 19,
 	"ADVDRIVING": 20,
 	"COPILOT": 21,
 	"PILOT": 22,
@@ -55,10 +55,10 @@ let trainingColumns = {
 	"WATER_DATE": {
 		col: trainingOffset + 7,
 	},
-	"RTA": {
+	"RTC": {
 		col: trainingOffset + 9,
 	},
-	"RTA_DATE": {
+	"RTC_DATE": {
 		col: trainingOffset + 10,
 	},
 	"ADVDRIVING": {
@@ -104,7 +104,7 @@ let trainings = [
 	{ name: 'Comms', key: 'COMMS' },
 	{ name: 'First Aid', key: 'FIRSTAID' },
 	{ name: 'Water', key: 'WATER' },
-	{ name: 'RTA', key: 'RTA' },
+	{ name: 'RTC', key: 'RTC' },
 	{ name: 'Adv Driving', key: 'ADVDRIVING' },
 	{ name: 'Co-Pilot', key: 'COPILOT' },
 	{ name: 'Pilot', key: 'PILOT' },
@@ -116,8 +116,8 @@ let trainings = [
 
 
 let rankColors = {
-	"Fire Commissioner": 0xd80000,
-	"Deputy Fire Commissioner": 0xe74c3c,
+	"Commissioner": 0xd80000,
+	"Deputy Commissioner": 0xe74c3c,
 	"Area Manager": 0xad1457,
 	"Watch Manager": 0x1abc9c,
 	"Crew Manager": 0x3498db,
@@ -165,6 +165,7 @@ async function syncUnits() {
 				badge: row['Badge'],
 				rank: row['Rank'],
 				tenure: row['Tenure'],
+				nameBadge: row['Name and Badge'],
 				training: unitTrainings,
 				hr: {
 					citizen: 'Unknown',
@@ -177,17 +178,17 @@ async function syncUnits() {
 		}
 	})
 
-	let trainingRows = await roster.sheetsByTitle['Training Database'].getRows();
+	let trainingRows = await roster.sheetsByTitle['Training History'].getRows();
 
 	trainingRows.forEach(row => {
-		if(row['Badge']) {
-			let unit = _units.find(u => u.badge === row['Badge'])
+		if(row['Unit']) {
+			let unit = _units.find(u => u.nameBadge === row['Unit'])
 
 			if(unit) {
 				unit.training.forEach(unitTraining => {
-					if(unitTraining.key !== 'TRAINER') {
-						unitTraining.trainer = row._rawData[trainingColumns[unitTraining.key].col + 1];
-						unitTraining.date = row._rawData[trainingColumns[unitTraining.key + '_DATE'].col + 1];
+					if (unitTraining.name === row['Training']) {
+						unitTraining.trainer = row['Trainer']
+						unitTraining.date = row['Training Date']
 					}
 				})
 			}
@@ -227,6 +228,20 @@ async function updateCell(column, row, value, sheet = "Main Roster") {
 	console.log(`[INFO] Successfully updated ${column} to "${value}"`)
 }
 
+async function getRowByValue(column, value, sheet = "Main Roster") {
+	let page = await roster.sheetsByTitle[sheet].getRows();
+	let row = null
+
+	page.forEach((r, rn) => {
+		if(r[column] === value) {
+			row = r;
+			console.log(`[INFO] Successfully found ${value} on row ${rn}`);
+		}
+	})
+
+	return [row, page];
+}
+
 async function getUnits() {
 	return units;
 }
@@ -251,9 +266,11 @@ function capitalizeFirstLetter(string) {
  * @param training array
  * @param interaction {CommandInteraction}
 */
-async function assignTraining(row, training, interaction) {
-	let trainerColumn = training.name;
-	let dateColumn = training.name + ' Date';
+async function assignTraining(unit, training, interaction) {
+	let unitColumn = "B";
+	let dateColumn = "C";
+	let trainerColumn = "D";
+	let trainingColumn = "E";
 
 	let trainer = getUser(interaction.user.id, interaction);
 	if(!trainer) {
@@ -263,8 +280,21 @@ async function assignTraining(row, training, interaction) {
 		})
 	}
 
-	await updateCell(trainerColumn, row, `[${trainer.badge}] ${trainer.name}`, "Training Database");
-	await updateCell(dateColumn, row, moment().format('D/M/y'), "Training Database");
+	let trainingSheet = await roster.sheetsByTitle['Training History']
+	let rows = await trainingSheet.getRows({
+		offset: 1
+	});
+
+	let rowNumber = 2;
+	let lastRow = rows[rows.length - 1];
+	if(lastRow) {
+		rowNumber = lastRow._rowNumber + 1;
+	}
+
+	await updateCell(unitColumn, rowNumber, `[${unit.badge}] ${unit.name}`, "Training History");
+	await updateCell(dateColumn, rowNumber, moment().format('D/M/y'), "Training History");
+	await updateCell(trainerColumn, rowNumber, `[${trainer.badge}] ${trainer.name}`, "Training History");
+	await updateCell(trainingColumn, rowNumber, training.name, "Training History");
 }
 
 /**
@@ -391,3 +421,4 @@ exports.assignTraining = assignTraining;
 exports.removeTraining = removeTraining;
 exports.log = log;
 exports.getRosterData = getRosterData;
+exports.getRowByValue = getRowByValue;

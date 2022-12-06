@@ -59,8 +59,8 @@ module.exports = {
 	run: async (client, interaction, args) => {
 		const tfExcludedTraining = ['RTA', 'Adv Driving', 'Co-Pilot', 'Pilot', 'Dispatch', 'FI', 'SC'];
 		const rfExcludedTraining = tfExcludedTraining;
-		const ffExcludedTraining = ['FI', 'SC'];
-		const afExcludedTraining = ['SC'];
+		const ffExcludedTraining = ['FI', 'SC', 'Pilot'];
+		const afExcludedTraining = ['SC', 'Pilot'];
 
 		if(!args[2]) {
 			return interaction.reply({
@@ -168,7 +168,7 @@ module.exports = {
 					ephemeral: true
 				});
 			} else {
-				await assignTraining(unit.row, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
+				await assignTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
 			}
 
 			await log(`Added ${training.name} to [${unit.callsign}] ${unit.name}`, interaction);
@@ -218,7 +218,7 @@ module.exports = {
 					ephemeral: true
 				});
 			} else {
-				await removeTraining(unit.row, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
+				await assignTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
 			}
 
 			await log(`Removed ${training.name} from [${unit.callsign}] ${unit.name}`, interaction);
