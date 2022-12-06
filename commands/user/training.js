@@ -57,7 +57,7 @@ module.exports = {
 	 * @param {String[]} args
 	 */
 	run: async (client, interaction, args) => {
-		const tfExcludedTraining = ['RTA', 'Adv Driving', 'Co-Pilot', 'Pilot', 'Dispatch', 'FI', 'SC'];
+		const tfExcludedTraining = ['RTC', 'Adv Driving', 'Co-Pilot', 'Pilot', 'Dispatch', 'FI', 'SC'];
 		const rfExcludedTraining = tfExcludedTraining;
 		const ffExcludedTraining = ['FI', 'SC', 'Pilot'];
 		const afExcludedTraining = ['SC', 'Pilot'];

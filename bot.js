@@ -39,10 +39,10 @@ module.exports = async (client) => {
 	});
 
 	client.on('error', async (error) => {
-		console.log(error)
+		console.log("[MAJOR] There was a script error, this should be looked into")
 	})
 
 	client.on('warn', async (error) => {
-		console.log(error)
+		console.log("[ERROR] There was a script warning, this should be looked into")
 	})
 }
