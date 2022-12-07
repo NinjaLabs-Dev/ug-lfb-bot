@@ -1,5 +1,5 @@
 const { Client, Collection, GatewayIntentBits, ActivityFlagsBitField } = require('discord.js');
-import axios from 'axios'
+const axios = require('axios');
 require('dotenv').config()
 
 const client = new Client({
