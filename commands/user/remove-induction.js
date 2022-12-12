@@ -46,7 +46,14 @@ module.exports = {
 			})
 		}
 
-		await member.roles.remove(role);
+		try {
+			await member.roles.remove(role);
+		} catch (e) {
+			return interaction.reply({
+				content: `There was an issue completing this.`,
+				ephemeral: true
+			})
+		}
 
 		return interaction.reply({
 			content: `Removed induction role from ${user.tag}.`,
