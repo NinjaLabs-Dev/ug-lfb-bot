@@ -29,7 +29,7 @@ module.exports = {
 	 * @param {String[]} args
 	*/
 	hasPermission: async (client, interaction, args) => {
-		return true;
+		return interaction.member.id === process.env.DEVELOPER_ID;
 	},
 	/**
 	 * @param {Client} client

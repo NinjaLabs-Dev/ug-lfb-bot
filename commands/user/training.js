@@ -49,7 +49,7 @@ module.exports = {
 	 * @param {String[]} args
 	*/
 	hasPermission: async (client, interaction, args) => {
-		return true;
+		return interaction.member.roles.cache.find(r => r.id === process.env.TRAINER_ROLE_ID);
 	},
 	/**
 	 * @param {Client} client
