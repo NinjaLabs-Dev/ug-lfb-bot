@@ -114,7 +114,6 @@ let trainings = [
 	{ name: 'Trainer', key: 'TRAINER' },
 ]
 
-
 let rankColors = {
 	"Commissioner": 0xd80000,
 	"Deputy Commissioner": 0xe74c3c,
@@ -127,6 +126,20 @@ let rankColors = {
 	"Trainee Firefighter": 0xe67e22,
 	"Retained Firefighter": 0xe74c3c,
 }
+
+let stations = [
+	{
+		name: "MacDonald Street",
+		postal: "136",
+		map: "https://cdn.ninjalabs.dev/ag3QU.png"
+	},
+	{
+		name: "Capital Boulevard",
+		postal: "178",
+		map: "https://cdn.ninjalabs.dev/tVKBP.png"
+	}
+]
+
 let units = [];
 let _unitsLastUpdated = null;
 
@@ -441,3 +454,4 @@ exports.removeTraining = removeTraining;
 exports.log = log;
 exports.getRosterData = getRosterData;
 exports.getRowByValue = getRowByValue;
+exports.stations = stations;
