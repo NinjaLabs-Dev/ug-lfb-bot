@@ -333,7 +333,7 @@ function getUser(term, interaction) {
 	if(term.length === 18) {
 		let user = client.getDiscordUser(term, interaction.guild);
 
-		let _callsign = user.displayName.match(/(?<=[\).+?(?=\])/g);
+		let _callsign = user.displayName.match(/(?<=\[).+?(?=\])/g);
 		if(_callsign.length) {
 			let unit = units.find(u => u.callsign === _callsign[0]);
 
