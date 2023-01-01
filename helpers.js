@@ -1,8 +1,6 @@
 const { CommandInteraction, EmbedBuilder} = require('discord.js');
-const axios = require("axios");
 const moment = require("moment");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
-const rosterCredentials = require("./lfb-bot-00cf901ff71c.json");
 const client = require('./index');
 let roster;
 let hr;
@@ -20,83 +18,11 @@ let columns = {
 	"ADVDRIVING": 20,
 	"COPILOT": 21,
 	"PILOT": 22,
-	"DISPATCH": 24,
-	"FI": 25,
-	"SC": 26,
-	"TRAINER": 10
-}
-
-let trainingOffset = 6;
-let trainingColumns = {
-	"CALLSIGN": {
-		col: 0,
-	},
-	"DRIVING": {
-		col: trainingOffset,
-	},
-	"DRIVING_DATE": {
-		col: trainingOffset + 1,
-	},
-	"COMMS": {
-		col: trainingOffset + 2,
-	},
-	"COMMS_DATE": {
-		col: trainingOffset + 3,
-	},
-	"FIRSTAID": {
-		col: trainingOffset + 4,
-	},
-	"FIRSTAID_DATE": {
-		col: trainingOffset + 5,
-	},
-	"WATER": {
-		col: trainingOffset + 6,
-	},
-	"WATER_DATE": {
-		col: trainingOffset + 7,
-	},
-	"RTC": {
-		col: trainingOffset + 9,
-	},
-	"RTC_DATE": {
-		col: trainingOffset + 10,
-	},
-	"ADVDRIVING": {
-		col: trainingOffset + 11,
-	},
-	"ADVDRIVING_DATE": {
-		col: trainingOffset + 12,
-	},
-	"COPILOT": {
-		col: trainingOffset + 13,
-	},
-	"COPILOT_DATE": {
-		col: trainingOffset + 14,
-	},
-	"PILOT": {
-		col: trainingOffset + 15,
-	},
-	"PILOT_DATE": {
-		col: trainingOffset + 16,
-	},
-	"DISPATCH": {
-		col: trainingOffset + 18,
-	},
-	"DISPATCH_DATE": {
-		col: trainingOffset + 19,
-	},
-	"FI": {
-		col: trainingOffset + 20,
-	},
-	"FI_DATE": {
-		col: trainingOffset + 21,
-	},
-	"SC": {
-		col: trainingOffset + 22,
-	},
-	"SC_DATE": {
-		col: trainingOffset + 23,
-	},
+	"DISPATCH": 25,
+	"FI": 26,
+	"SC": 24,
+	"TRAINER": 10,
+	"S&R": 27,
 }
 
 let trainings = [
@@ -108,9 +34,10 @@ let trainings = [
 	{ name: 'Adv Driving', key: 'ADVDRIVING' },
 	{ name: 'Co-Pilot', key: 'COPILOT' },
 	{ name: 'Pilot', key: 'PILOT' },
+	{ name: 'SC', key: 'SC' },
 	{ name: 'Dispatch', key: 'DISPATCH' },
 	{ name: 'FI', key: 'FI' },
-	{ name: 'SC', key: 'SC' },
+	{ name: 'S&R', key: 'S&R' },
 	{ name: 'Trainer', key: 'TRAINER' },
 ]
 
@@ -230,17 +157,6 @@ async function syncUnits() {
 	_unitsLastUpdated = new Date();
 }
 
-async function updateCell(column, row, value, sheet = "Main Roster") {
-	let page = await roster.sheetsByTitle[sheet].getRows({
-		limit: 1,
-		offset: row,
-	});
-	page[0][column] = value;
-	await page[0].save();
-
-	console.log(`[INFO] Successfully updated ${column} to "${value}"`)
-}
-
 async function getRowByValue(column, value, sheet = "Main Roster") {
 	let page = await roster.sheetsByTitle[sheet].getRows();
 	let row = null
@@ -275,13 +191,11 @@ function capitalizeFirstLetter(string) {
 }
 
 /**
- * @param row int
+ * @param unit array
  * @param training array
  * @param interaction {CommandInteraction}
 */
 async function assignTraining(unit, training, interaction) {
-	let columns = ['Unit', 'Training Date', 'Trainer', 'Training']
-
 	let trainer = getUser(interaction.user.id, interaction);
 	if(!trainer) {
 		return interaction.reply({
@@ -419,7 +333,7 @@ function getUser(term, interaction) {
 	if(term.length === 18) {
 		let user = client.getDiscordUser(term, interaction.guild);
 
-		let _callsign = user.displayName.match(/(?<=\[).+?(?=\])/g);
+		let _callsign = user.displayName.match(/(?<=[\).+?(?=\])/g);
 		if(_callsign.length) {
 			let unit = units.find(u => u.callsign === _callsign[0]);
 
