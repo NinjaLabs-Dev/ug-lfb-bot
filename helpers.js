@@ -73,9 +73,9 @@ let _unitsLastUpdated = null;
 authSheets();
 
 // Sync units every 30 seconds
-setInterval(async () => {
-	syncUnits()
-}, 1000 * process.env.UNIT_UPDATE_RATE)
+// setInterval(async () => {
+// 	syncUnits()
+// }, 1000 * process.env.UNIT_UPDATE_RATE)
 
 function updateUnits() {
 	syncUnits()
