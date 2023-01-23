@@ -172,6 +172,8 @@ async function getRowByValue(column, value, sheet = "Main Roster") {
 }
 
 async function getUnits() {
+	await syncUnits();
+	
 	return units;
 }
 
