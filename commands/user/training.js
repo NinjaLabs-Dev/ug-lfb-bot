@@ -167,14 +167,15 @@ module.exports = {
 					ephemeral: true
 				});
 			} else {
+				await interaction.reply({
+					content: 'Successfully assigned training to user',
+					ephemeral: true
+				})
+
 				await assignTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
 			}
 
 			await log(`Added ${training.name} to [${unit.callsign}] ${unit.name}`, interaction);
-			await interaction.reply({
-				content: 'Successfully assigned training to user',
-				ephemeral: true
-			})
 		} else if(action === 'remove') {
 			if(!interaction.member.roles.cache.has(process.env.TRAINER_ROLE_ID)) {
 				return interaction.reply({
