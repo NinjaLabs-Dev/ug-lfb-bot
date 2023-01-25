@@ -169,7 +169,8 @@ module.exports = {
 			} else {
 				await interaction.reply({
 					content: 'Successfully assigned training to user',
-					ephemeral: true
+					ephemeral: true,
+					fetchReply: true
 				})
 
 				await assignTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
