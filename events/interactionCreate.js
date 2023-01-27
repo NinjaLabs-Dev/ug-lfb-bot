@@ -47,7 +47,7 @@ client.on("interactionCreate", async (interaction) => {
 				})
 			}
 		} else {
-			return interaction.followUp({ content: "You do not have permission to do that.", ephemeral: true });
+			return interaction.reply({ content: "You do not have permission to do that.", ephemeral: true });
 		}
 	}
 

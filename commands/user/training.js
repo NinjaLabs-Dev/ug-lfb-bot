@@ -69,6 +69,12 @@ module.exports = {
 			})
 		}
 
+		const action = args[0];
+
+		if(action === 'add' || action === 'remove') {
+			await interaction.deferReply({ ephemeral: true });
+		}
+
 		let units = await getUnits();
 		let unit = await getUser(args[2], interaction);
 
@@ -78,8 +84,6 @@ module.exports = {
 				ephemeral: true
 			});
 		}
-
-		let action = args[0];
 
 		if(action === 'view') {
 			if(!columns[args[1].toUpperCase()]) {
@@ -128,17 +132,11 @@ module.exports = {
 			})
 		} else if(action === 'add') {
 			if(!interaction.member.roles.cache.has(process.env.TRAINER_ROLE_ID)) {
-				return interaction.reply({
-					content: "Are you sure you have permission to do that?",
-					ephemeral: true
-				});
+				return interaction.editReply("Are you sure you have permission to do that?");
 			}
 
 			if(!columns[args[1].toUpperCase()]) {
-				return interaction.reply({
-					content: "We couldn't find that training, did you spell it correctly?",
-					ephemeral: true
-				});
+				return interaction.editReply("We couldn't find that training, did you spell it correctly?");
 			}
 
 			let training = {};
@@ -149,29 +147,19 @@ module.exports = {
 			})
 
 			if(
-				unit.rank === 'Deputy Fire Commissioner' ||
-				unit.rank === 'Fire Commissioner' ||
+				unit.rank === 'Deputy Commissioner' ||
+				unit.rank === 'Commissioner' ||
 				(unit.rank === 'Retained Firefighter' && rfExcludedTraining.includes(training.name)) ||
 				(unit.rank === 'Trainee Firefighter' && tfExcludedTraining.includes(training.name)) ||
 				(unit.rank === 'Firefighter' && ffExcludedTraining.includes(training.name)) ||
 				(unit.rank === 'Advanced Firefighter' && afExcludedTraining.includes(training.name))) {
-				return interaction.reply({
-					content: "That is an invalid action",
-					ephemeral: true
-				});
+				return interaction.editReply("That is an invalid action.");
 			}
 
 			if(training.value === 'TRUE') {
-				return interaction.reply({
-					content: "That user already has that training assigned!",
-					ephemeral: true
-				});
+				return interaction.editReply("That user already has that training assigned!");
 			} else {
-				await interaction.reply({
-					content: 'Successfully assigned training to user',
-					ephemeral: true,
-					fetchReply: true
-				})
+				await interaction.editReply("Successfully assigned training to user.")
 
 				await assignTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
 			}
@@ -179,17 +167,11 @@ module.exports = {
 			await log(`Added ${training.name} to [${unit.callsign}] ${unit.name}`, interaction);
 		} else if(action === 'remove') {
 			if(!interaction.member.roles.cache.has(process.env.TRAINER_ROLE_ID)) {
-				return interaction.reply({
-					content: "Are you sure you have permission to do that?",
-					ephemeral: true
-				});
+				return interaction.editReply("Are you sure you have permission to do that?");
 			}
 
 			if(!columns[args[1].toUpperCase()]) {
-				return interaction.reply({
-					content: "We couldn't find that training, did you spell it correctly?",
-					ephemeral: true
-				});
+				return interaction.editReply("We couldn't find that training, did you spell it correctly?");
 			}
 
 			let training = {};
@@ -200,33 +182,24 @@ module.exports = {
 			})
 
 			if(
-				unit.rank === 'Deputy Fire Commissioner' ||
-				unit.rank === 'Fire Commissioner' ||
+				unit.rank === 'Deputy Commissioner' ||
+				unit.rank === 'Commissioner' ||
 				(unit.rank === 'Retained Firefighter' && rfExcludedTraining.includes(training.name)) ||
 				(unit.rank === 'Trainee Firefighter' && tfExcludedTraining.includes(training.name)) ||
 				(unit.rank === 'Firefighter' && ffExcludedTraining.includes(training.name)) ||
 				(unit.rank === 'Advanced Firefighter' && afExcludedTraining.includes(training.name))) {
-				return interaction.reply({
-					content: "That is an invalid action",
-					ephemeral: true
-				});
+				return interaction.editReply("That is an invalid action");
 			}
 
 
 			if(training.value !== 'TRUE') {
-				return interaction.reply({
-					content: "That user hasn't got that training assigned!",
-					ephemeral: true
-				});
+				return interaction.editReply("That user hasn't got that training assigned!");
 			} else {
 				await removeTraining(unit, trainings.find(t => t.key === args[1].toUpperCase()), interaction)
 			}
 
 			await log(`Removed ${training.name} from [${unit.callsign}] ${unit.name}`, interaction);
-			await interaction.reply({
-				content: 'Successfully removed training from user',
-				ephemeral: true
-			})
+			await interaction.editReply("Successfully removed training from user")
 		}
 	}
 }

@@ -39,6 +39,7 @@ module.exports = async (client) => {
 	});
 
 	client.on('error', async (error) => {
+		console.error(error)
 		console.log("[MAJOR] There was a script error, this should be looked into")
 	})
 
