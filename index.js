@@ -14,7 +14,9 @@ const client = new Client({
 module.exports = client;
 
 client.commands = new Collection();
+client.subCommands = new Collection();
 client.config = process.env;
+client.selectCache = new Collection();
 
 client.getDiscordUser = (id, guild = false) => {
 	if(client.user.id === id) {
