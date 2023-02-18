@@ -1,4 +1,5 @@
 const { Client, Collection, GatewayIntentBits, ActivityFlagsBitField } = require('discord.js');
+const { logInfo, logError, logSuccess } = require("./helpers/log");
 const axios = require('axios');
 require('dotenv').config()
 
@@ -38,7 +39,8 @@ client.login(client.config.TOKEN).then(r => {
 			name: process.env.STATUS
 		}]
 	})
-	console.log("[INFO] Client connected to Discord")
+
+	logInfo("Client connected to Discord")
 
 	setInterval(() => {
 		axios.get('https://kuma.ninjalabs.dev/api/push/JFuK9sQ6wN?msg=OK&ping=')

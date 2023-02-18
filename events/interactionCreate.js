@@ -1,6 +1,8 @@
 const client = require("../index");
-const { getUserDisplayName } = require('../helpers');
+const { getUserDisplayName, trainings} = require('../helpers');
 const commandType = require("../commandTypes.json");
+const { logInfo, logError, logSuccess } = require("../helpers/log");
+const {StringSelectMenuBuilder, ActionRowBuilder} = require("discord.js");
 
 client.on("interactionCreate", async (interaction) => {
 	// Slash Command Handling
@@ -15,7 +17,7 @@ client.on("interactionCreate", async (interaction) => {
 
 		let cmd = client.commands.get(interaction.commandName);
 		if (!cmd) {
-			console.log(`[ERROR] ${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName} but the command wasn't found.`)
+			logError(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName} but the command wasn't found.`)
 
 			return interaction.followUp({ content: "An error has occurred", ephemeral: true });
 		}
@@ -29,9 +31,10 @@ client.on("interactionCreate", async (interaction) => {
 				const subCommandName = interaction.options.getSubcommand();
 
 				subCommand = client.subCommands.get(`${name}/${subCommandName}`)
+				subCommand.name = subCommandName;
 
 				if(!subCommand) {
-					console.log(`[ERROR] ${getUserDisplayName(interaction)}: Attempted to run '${name} ${subCommandName}' but the command wasn't found.`)
+					logInfo(`${getUserDisplayName(interaction)}: Attempted to run '${name} ${subCommandName}' but the command wasn't found.`)
 
 					return interaction.followUp({ content: "An error has occurred", ephemeral: true });
 				}
@@ -55,18 +58,22 @@ client.on("interactionCreate", async (interaction) => {
 		const hasPermission = await cmd.hasPermission(client, interaction, args);
 
 		if(hasPermission) {
-			console.log(`[INFO] ${getUserDisplayName(interaction)}: Ran ${interaction.commandName}`)
+			let name = subCommand ? `${interaction.commandName} ${cmd.name}` : `${interaction.commandName}`
+			logInfo(`${getUserDisplayName(interaction)}: Ran /${name}`)
+
 			try {
-				cmd.run(client, interaction, args);
+				await cmd.run(client, interaction, args);
 			} catch (e) {
-				console.log(`[INFO] ${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, there was an issue running command.`)
+				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, there was an issue running command.`)
+
 				return interaction.reply({
 					content: 'There was an issue doing this. Contact Support.',
 					ephemeral: true
 				})
 			}
 		} else {
-			console.log(`[INFO] ${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, they lack the permission.`)
+			logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, they lack the permission.`)
+
 			return interaction.reply({ content: "You do not have permission to do that.", ephemeral: true });
 		}
 	}
@@ -81,10 +88,25 @@ client.on("interactionCreate", async (interaction) => {
 
 	if(interaction.isAnySelectMenu()) {
 		const menuId = interaction.customId.split('/');
-		const menuName = menuId[0];
-		const action = menuId[1];
+		const menuName = menuId[0].split('-')[0];
+		const action = menuId[0].split('-')[1];
 
+		let subCommand = client.subCommands.get(`${menuName}/${action}`)
 
+		if(interaction.guild) {
+			interaction.member = interaction.guild.members.cache.get(interaction.user.id);
+		}
+
+		try {
+			await subCommand.menuCallback(client, interaction)
+		} catch (e) {
+			logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${menuName}/${action}, there was an issue running command.`)
+
+			return interaction.reply({
+				content: 'There was an issue doing this. Contact Support.',
+				ephemeral: true
+			})
+		}
 	}
 });
 

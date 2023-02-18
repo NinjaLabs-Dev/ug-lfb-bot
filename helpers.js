@@ -1,29 +1,10 @@
-const { CommandInteraction, EmbedBuilder} = require('discord.js');
+const { CommandInteraction, EmbedBuilder, UserSelectMenuInteraction } = require('discord.js');
 const moment = require("moment");
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const client = require('./index');
+const { logInfo, logError, logSuccess } = require("./helpers/log");
 let roster;
 let hr;
-
-let columns = {
-	"NAME": 0,
-	"RANK": 1,
-	"CALLSIGN": 2,
-	"TENURE": 5,
-	"DRIVING": 14,
-	"COMMS": 15,
-	"FIRSTAID": 16,
-	"WATER": 17,
-	"RTC": 19,
-	"ADVDRIVING": 20,
-	"COPILOT": 21,
-	"PILOT": 22,
-	"DISPATCH": 25,
-	"FI": 26,
-	"SC": 24,
-	"TRAINER": 10,
-	"S&R": 27,
-}
 
 let trainings = [
 	{ name: 'Driving', key: 'DRIVING' },
@@ -56,14 +37,14 @@ let rankColors = {
 
 let stations = [
 	{
-		name: "MacDonald Street",
-		postal: "136",
-		map: "https://cdn.ninjalabs.dev/ag3QU.png"
+		name: "Rockford Drive (Main HQ)",
+		postal: "505",
+		map: "https://cdn.ninjalabs.dev/vGhIk.png"
 	},
 	{
-		name: "Capital Boulevard",
-		postal: "178",
-		map: "https://cdn.ninjalabs.dev/tVKBP.png"
+		name: "Seaview Road",
+		postal: "2018",
+		map: "https://cdn.ninjalabs.dev/LvT5F.png"
 	}
 ]
 
@@ -151,7 +132,7 @@ async function syncUnits() {
 		}
 	})
 
-	console.log(`[INFO] Updated units at: ${new Date().toISOString()}`)
+	logInfo(`Updated units at: ${new Date().toISOString()}`)
 
 	units = _units;
 	_unitsLastUpdated = new Date();
@@ -173,7 +154,7 @@ async function getRowByValue(column, value, sheet = "Main Roster") {
 
 async function getUnits() {
 	await syncUnits();
-	
+
 	return units;
 }
 
@@ -195,7 +176,7 @@ function capitalizeFirstLetter(string) {
 /**
  * @param unit array
  * @param training array
- * @param interaction {CommandInteraction}
+ * @param interaction {CommandInteraction|UserSelectMenuInteraction}
 */
 async function assignTraining(unit, training, interaction) {
 	let trainer = getUser(interaction.user.id, interaction);
@@ -241,7 +222,7 @@ async function assignTraining(unit, training, interaction) {
 /**
  * @param unit array
  * @param training array
- * @param interaction {CommandInteraction}
+ * @param interaction {CommandInteraction|UserSelectMenuInteraction}
  */
 async function removeTraining(unit, training, interaction) {
 	let rows = await roster.sheetsByTitle['Training History'].getRows({ offset: 1 });
@@ -271,16 +252,17 @@ async function authSheets() {
 			hr = hrDoc;
 			await hr.loadInfo();
 
-			console.log("[INFO] Successfully connected to google sheets - HR!");
+			logSuccess(`Successfully connected to HR Sheet`)
 			return true;
 		}).catch(() => {
-			console.log("[ERROR] There was an issue connecting to google sheets - HR!")
+			logError(`Unable to connect to HR Sheet`)
 		});
 
-		console.log("[INFO] Successfully connected to google sheets! - Roster");
+		logSuccess(`Successfully connected to Roster Sheet`)
+		await updateUnits()
 		return true;
 	}).catch(() => {
-		console.log("[ERROR] There was an issue connecting to google sheets - Roster!")
+		logError(`Unable to connect to Roster Sheet`)
 	});
 }
 
@@ -322,7 +304,7 @@ function getRosterData() {
 
 /**
  * @param term string
- * @param interaction { CommandInteraction }
+ * @param interaction { UserSelectMenuInteraction|CommandInteraction }
  */
 function getUser(term, interaction) {
 	if(term.includes('-')) {
@@ -335,13 +317,16 @@ function getUser(term, interaction) {
 	if(term.length === 18) {
 		let user = client.getDiscordUser(term, interaction.guild);
 
-		let _callsign = user.displayName.match(/(?<=\[).+?(?=\])/g);
-		if(_callsign.length) {
-			let unit = units.find(u => u.callsign === _callsign[0]);
+		if(user) {
 
-			return unit ?? false;
+			let _callsign = user.displayName?.match(/(?<=\[).+?(?=\])/g);
+			if(_callsign && _callsign.length) {
+				let unit = units.find(u => u.callsign === _callsign[0]);
+
+				return unit ?? false;
+			}
+			return false;
 		}
-
 		return false;
 	}
 
@@ -355,13 +340,22 @@ function getUser(term, interaction) {
 	return false;
 }
 
+function hasTraining(user, trainingName) {
+	user.training.forEach(training => {
+		if(training.name === trainingName || training.key === trainingName) {
+			return true;
+		}
+	})
+
+	return false;
+}
+
 exports.getUser = getUser;
 exports.getUserDisplayName = getUserDisplayName;
 exports.rankColors = rankColors;
 exports.getUnits = getUnits;
 exports.syncUnits = syncUnits;
 exports.unitsLastUpdated = unitsLastUpdated;
-exports.columns = columns;
 exports.trainings = trainings;
 exports.capitalizeFirstLetter = capitalizeFirstLetter;
 exports.updateUnits = updateUnits;
@@ -371,3 +365,4 @@ exports.log = log;
 exports.getRosterData = getRosterData;
 exports.getRowByValue = getRowByValue;
 exports.stations = stations;
+exports.hasTraining = hasTraining;
