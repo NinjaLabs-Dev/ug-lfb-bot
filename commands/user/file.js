@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, EmbedBuilder, APIEmbedField } = require('discord.js');
 const commandType = require("../../commandTypes.json");
-const { getUnits, unitsLastUpdated, rankColors, trainings, log, getUser} = require('../../helpers');
+const { getUnits, unitsLastUpdated, rankColors, trainings, logAction, getUser} = require('../../helpers');
 
 module.exports = {
 	name: 'file',
@@ -68,7 +68,7 @@ module.exports = {
 			trainingFields.push({ name: training.name, value: training.value === 'TRUE' ? '✅' : '❌', inline: true})
 		})
 
-		await log(`Searched [${unit.callsign}] ${unit.name}'s record`, interaction);
+		await logAction(`Searched [${unit.callsign}] ${unit.name}'s record`, interaction);
 		await interaction.reply({
 			embeds: [
 				new EmbedBuilder()
