@@ -270,7 +270,7 @@ async function authSheets() {
  * @param action string
  * @param interaction {CommandInteraction}
  */
-async function log(action, interaction) {
+async function logAction(action, interaction) {
 	if(!process.env.LOG_CHANNEL) {
 		return console.log('[MAJOR] No log channel has been set!')
 	}

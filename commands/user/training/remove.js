@@ -1,7 +1,9 @@
 const { Client, CommandInteraction, EmbedBuilder, APIEmbedField, StringSelectMenuBuilder, ActionRowBuilder,
 	UserSelectMenuBuilder
 } = require('discord.js');
-const { getUnits, unitsLastUpdated, rankColors, trainings, assignTraining, removeTraining, log, getUser, hasTraining} = require('../../../helpers');
+const { getUnits, unitsLastUpdated, rankColors, trainings, assignTraining, removeTraining, log, getUser, hasTraining,
+	logAction
+} = require('../../../helpers');
 
 module.exports = {
 	subCommand: true,
@@ -80,6 +82,7 @@ module.exports = {
 					for (const _training of trainings) {
 						if(_training.key === training) {
 							await removeTraining(user, _training, interaction)
+							await logAction(`Removed ${_training.name} to [${user.callsign}] ${user.name}'s record`, interaction);
 						}
 					}
 				}

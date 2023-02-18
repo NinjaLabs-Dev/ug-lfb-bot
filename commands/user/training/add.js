@@ -1,5 +1,7 @@
 const { Client, CommandInteraction, ActionRowBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder, UserSelectMenuInteraction} = require('discord.js');
-const { getUnits, unitsLastUpdated, rankColors, trainings, assignTraining, removeTraining, log, getUser, hasTraining } = require('../../../helpers');
+const { getUnits, unitsLastUpdated, rankColors, trainings, assignTraining, removeTraining, log, getUser, hasTraining,
+	logAction
+} = require('../../../helpers');
 
 module.exports = {
 	subCommand: true,
@@ -78,11 +80,11 @@ module.exports = {
 					for (const _training of trainings) {
 						if(_training.key === training) {
 							await assignTraining(user, _training, interaction)
+							await logAction(`Added ${_training.name} to [${user.callsign}] ${user.name}'s record`, interaction);
 						}
 					}
 				}
 			}
-
 			return interaction.editReply({
 				content: "Training(s) successfully assigned.",
 			})
