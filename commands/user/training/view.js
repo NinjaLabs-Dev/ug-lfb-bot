@@ -1,7 +1,7 @@
 const { Client, CommandInteraction, EmbedBuilder, UserSelectMenuBuilder, ActionRowBuilder,
 	StringSelectMenuBuilder, UserSelectMenuInteraction
 } = require('discord.js');
-const { unitsLastUpdated, rankColors, trainings, getUser} = require('../../../helpers');
+const { unitsLastUpdated, rankColors, trainings, getUser, getUnits} = require('../../../helpers');
 
 module.exports = {
 	subCommand: true,
@@ -36,6 +36,8 @@ module.exports = {
 	 * @param {UserSelectMenuInteraction} interaction
 	 */
 	menuCallback: async (client, interaction) => {
+		let units = await getUnits();
+
 		const menuId = interaction.customId.split('/');
 		const action = menuId[0].split('-')[1];
 		const trainingOptions = trainings.map(t => {

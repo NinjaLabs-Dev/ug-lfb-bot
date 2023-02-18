@@ -36,6 +36,7 @@ module.exports = {
 	 * @param {UserSelectMenuInteraction} interaction
 	 */
 	menuCallback: async (client, interaction) => {
+		let units = await getUnits();
 		const menuId = interaction.customId.split('/');
 		const menuName = menuId[0].split('-')[0];
 		const action = menuId[0].split('-')[1];
