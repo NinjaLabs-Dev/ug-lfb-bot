@@ -3,6 +3,8 @@ const { promisify } = require('util');
 const { Client } = require('discord.js');
 const { readdir } = require('fs/promises');
 const commandType = require("./commandTypes.json");
+const { subCommand } = require("./commands/user/training/add");
+const { logInfo, logError, logSuccess } = require("./helpers/log");
 
 const globPromise = promisify(glob);
 
@@ -10,7 +12,7 @@ const globPromise = promisify(glob);
  * @param {Client} client
  */
 module.exports = async (client) => {
-	console.log('[INFO] Starting up bot, registering events')
+	logInfo("Starting up bot, registering events")
 
 	// Events
 	const eventFiles = await globPromise(`./events/*.js`);
@@ -20,21 +22,39 @@ module.exports = async (client) => {
 	const commandFiles = await globPromise(`./commands/**/*.js`);
 
 	let commands = [];
+
 	commandFiles.map((value) => {
 		const file = require(value);
 		if (!file?.name) return;
+
 		client.commands.set(file.name, file);
-		console.log('[INFO] Found command: ' + file.name)
+		logInfo(`Found Command: ${file.name}`)
 
 		if (file.type !== commandType.CHAT_INPUT) delete file.description;
 		commands.push(file);
+
+		file.options?.forEach(option => {
+			if(option.type === commandType.args.SUBCOMMAND) {
+				const subCommandFileDir = value.replace(`.js`, `/${option.name}.js`);
+
+				try {
+					const subCommandFile = require(subCommandFileDir)
+
+					client.subCommands.set(`${file.name}/${option.name}`, subCommandFile)
+					logInfo(`Found Sub Commands: ${file.name} ${option.name}`)
+				} catch (e) {
+					logError(`Unable to find sub commands file: ${subCommandFileDir}`)
+				}
+			}
+		})
 	});
 
 	client.on('ready', async () => {
 		// Register commands in all guilds
-		console.log('[INFO] Client ready');
+		logInfo(`Client Ready`)
+
 		client.application.commands.set(commands).then(_ => {
-			console.log('[INFO] Registered commands to Discord');
+			logSuccess(`Registered commands to Discord successfully`)
 		});
 	});
 
