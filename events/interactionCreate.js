@@ -2,7 +2,7 @@ const client = require("../index");
 const { getUserDisplayName, trainings} = require('../helpers');
 const commandType = require("../commandTypes.json");
 const { logInfo, logError, logSuccess } = require("../helpers/log");
-const {StringSelectMenuBuilder, ActionRowBuilder} = require("discord.js");
+const {StringSelectMenuBuilder, ActionRowBuilder, codeBlock} = require("discord.js");
 
 client.on("interactionCreate", async (interaction) => {
 	// Slash Command Handling
@@ -67,7 +67,7 @@ client.on("interactionCreate", async (interaction) => {
 				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, there was an issue running command.`)
 
 				return interaction.reply({
-					content: 'There was an issue doing this. Contact Support.',
+					content: 'There was an issue doing this. Contact Support. \n Error: \n ' + codeBlock("text", e),
 					ephemeral: true
 				})
 			}
