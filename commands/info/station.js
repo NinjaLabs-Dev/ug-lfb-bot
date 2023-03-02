@@ -31,7 +31,7 @@ module.exports = {
 	 * @param {String[]} args
 	 */
 	run: async (client, interaction, args) => {
-		let station = stations[parseInt(args[0])];
+		let station = stations[parseInt(args[0].value)];
 
 		const embed = new EmbedBuilder()
 			.setTitle(station.name)
