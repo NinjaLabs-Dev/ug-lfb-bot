@@ -53,6 +53,10 @@ let _unitsLastUpdated = null;
 
 authSheets();
 
+setTimeout(() => {
+    updateUnits()
+}, 5000);
+
 // Sync units every 30 seconds
 // setInterval(async () => {
 // 	syncUnits()
@@ -65,7 +69,6 @@ function updateUnits() {
 async function syncUnits() {
 	let _units = [];
 
-	await roster.sheetsByTitle['Main Roster'].loadInfo();
 	let mainRows = await roster.sheetsByTitle['Main Roster'].getRows();
 
 	mainRows.forEach((row, i) => {
@@ -100,7 +103,6 @@ async function syncUnits() {
 		}
 	})
 
-	await roster.sheetsByTitle['Training History'].loadInfo();
 	let trainingRows = await roster.sheetsByTitle['Training History'].getRows();
 
 	trainingRows.forEach(row => {
@@ -117,8 +119,7 @@ async function syncUnits() {
 			}
 		}
 	})
-
-	await hr.sheetsByTitle['Personnel Info'].loadInfo()
+	
 	let hrRows = await hr.sheetsByTitle['Personnel Info'].getRows();
 
 	hrRows.forEach(row => {
@@ -262,7 +263,6 @@ async function authSheets() {
 		});
 
 		logSuccess(`Successfully connected to Roster Sheet`)
-		await updateUnits()
 		return true;
 	}).catch(() => {
 		logError(`Unable to connect to Roster Sheet`)
