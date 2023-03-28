@@ -59,7 +59,7 @@ module.exports = {
 			.setLabel('Nickname')
 			.setStyle(TextInputStyle.Short)
 			.setRequired(false)
-			.setValue(dUser.nickname)
+			.setValue(dUser.nickname ?? "")
 			.setPlaceholder(dUser.user.username)
 
 		modal.addComponents(new ActionRowBuilder().addComponents(nicknameInput));
