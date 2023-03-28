@@ -17,6 +17,7 @@ module.exports = client;
 
 client.commands = new Collection();
 client.subCommands = new Collection();
+client.modals = new Collection();
 client.config = process.env;
 client.selectCache = new Collection();
 
