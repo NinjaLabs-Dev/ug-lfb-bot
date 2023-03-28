@@ -80,6 +80,8 @@ module.exports = {
 		dUser.roles.remove(rolesToRemove)
 		dUser.roles.add(ranksToAdd)
 
+		await logAction(`Updated ranks`, interaction);
+
 		return interaction.editReply({
 			content: "Rank updated successfully.",
 		})
