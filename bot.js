@@ -49,6 +49,19 @@ module.exports = async (client) => {
 		})
 	});
 
+	// Modals
+	const modalFiles = await globPromise(`./components/modals/**/*.js`);
+
+	let modals = [];
+	modalFiles.map((value) => {
+		const file = require(value);
+		if (!file?.name) return;
+		client.modals.set(file.name, file);
+		logInfo(`Found modal: ${file.name}`)
+
+		modals.push(file);
+	});
+
 	client.on('ready', async () => {
 		// Register commands in all guilds
 		logInfo(`Client Ready`)

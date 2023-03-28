@@ -25,14 +25,34 @@ let trainings = [
 let rankColors = {
 	"Commissioner": 0xd80000,
 	"Deputy Commissioner": 0xe74c3c,
+	"Asst. Commissioner": 0xe74c3c,
 	"Area Manager": 0xad1457,
-	"Watch Manager": 0x1abc9c,
+	"Red Watch Manager": 0x1abc9c,
+	"Blue Watch Manager": 0x1abc9c,
 	"Crew Manager": 0x3498db,
 	"Lead Firefighter": 0x9b59b6,
 	"Advanced Firefighter": 0xe91e63,
 	"Firefighter": 0xf1c40f,
 	"Trainee Firefighter": 0xe67e22,
 	"Retained Firefighter": 0xe74c3c,
+}
+
+let rankRoles = {
+	"Commissioner": 1023688801966628891,
+	"Deputy Commissioner": "1023688801966628889",
+	"Asst. Commissioner": "1023688801966628888",
+	"Area Manager": "1023688801966628887",
+	"Red Watch Manager": "1023688801966628886",
+	"Blue Watch Manager": "1023688801966628885",
+	"Lead Firefighter": "1023688801945649171",
+	"Advanced Firefighter": "1023688801945649170",
+	"Firefighter": "1023688801945649169",
+	"Trainee Firefighter": "1023688801945649168",
+	"Retained Firefighter": "1023688801945649167",
+	"Red": "1064239790842728540",
+	"Blue": "1064239889928945736",
+	"Trainer": "1023688801916309623",
+	"LFB": "1023688801945649166",
 }
 
 let stations = [
@@ -86,11 +106,14 @@ async function syncUnits() {
 			_units.push({
 				row: i,
 				name: row['Full Name'],
+				isHR: row['HR'] === "TRUE",
+				isTrainer: row['Trainer'] === "TRUE",
 				callsign: row['Callsign'],
 				badge: row['Badge'],
 				rank: row['Rank'],
 				tenure: row['Tenure'],
 				nameBadge: row['Name and Badge'],
+				watch: row['Watch'],
 				training: unitTrainings,
 				hr: {
 					citizen: 'Unknown',
@@ -119,7 +142,7 @@ async function syncUnits() {
 			}
 		}
 	})
-	
+
 	let hrRows = await hr.sheetsByTitle['Personnel Info'].getRows();
 
 	hrRows.forEach(row => {
@@ -369,3 +392,4 @@ exports.getRosterData = getRosterData;
 exports.getRowByValue = getRowByValue;
 exports.stations = stations;
 exports.hasTraining = hasTraining;
+exports.rankRoles = rankRoles;

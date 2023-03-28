@@ -2,7 +2,7 @@ const client = require("../index");
 const { getUserDisplayName, trainings} = require('../helpers');
 const commandType = require("../commandTypes.json");
 const { logInfo, logError, logSuccess } = require("../helpers/log");
-const {StringSelectMenuBuilder, ActionRowBuilder, codeBlock} = require("discord.js");
+const {StringSelectMenuBuilder, ActionRowBuilder, codeBlock, InteractionType} = require("discord.js");
 
 client.on("interactionCreate", async (interaction) => {
 	// Slash Command Handling
@@ -91,22 +91,53 @@ client.on("interactionCreate", async (interaction) => {
 		const menuName = menuId[0].split('-')[0];
 		const action = menuId[0].split('-')[1];
 
-		let subCommand = client.subCommands.get(`${menuName}/${action}`)
+		let cmd
+		if(menuId.length > 1) {
+			cmd = client.subCommands.get(`${menuName}/${action}`)
+		} else {
+			cmd = client.commands.get(`${menuName}`)
+		}
 
 		if(interaction.guild) {
 			interaction.member = interaction.guild.members.cache.get(interaction.user.id);
 		}
 
 		try {
-			await subCommand.menuCallback(client, interaction)
+			await cmd.menuCallback(client, interaction)
 		} catch (e) {
-			logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${menuName}/${action}, there was an issue running command.`)
+			if(menuId.length > 1) {
+				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${menuName}/${action}, there was an issue running command.`)
+			} else {
+				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${menuName}, there was an issue running command.`)
+			}
 
-			return interaction.reply({
-				content: 'There was an issue doing this. Contact Support.',
-				ephemeral: true
-			})
+			if(interaction.deferred) {
+				return interaction.editReply({
+					content: 'There was an issue doing this. Contact Support. \n Error: \n ' + codeBlock("text", e),
+					ephemeral: true
+				})
+			} else {
+				return interaction.reply({
+					content: 'There was an issue doing this. Contact Support. \n Error: \n ' + codeBlock("text", e),
+					ephemeral: true
+				})
+			}
 		}
+	}
+
+	if(interaction.type === InteractionType.ModalSubmit) {
+		let args = interaction.customId.split('-');
+		let fileName = args[0]
+		let suggestionId = args[1];
+		const modal = client.modals.get(fileName);
+
+		if(!modal) {
+			console.log(`[ERROR] ${getUserDisplayName(interaction)}: Attempted to run ${interaction.customId} but the modal wasn't found.`);
+
+			return interaction.followUp({ content: "An error has occurred", ephemeral: true });
+		}
+
+		await modal.run(client, interaction, suggestionId);
 	}
 });
 
