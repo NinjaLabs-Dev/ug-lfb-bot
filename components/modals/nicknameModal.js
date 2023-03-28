@@ -1,7 +1,7 @@
 const { Client, CommandInteraction, ActionRow, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const commandType = require("../../commandTypes.json");
 const client = require("../../index");
-const { suggestionStatus, generateSuggestionEmbed, generateManagementSuggestionEmbed } = require("../../helpers");
+const { suggestionStatus, generateSuggestionEmbed, generateManagementSuggestionEmbed, logAction} = require("../../helpers");
 
 module.exports = {
 	name: 'nicknameModal',
@@ -29,6 +29,8 @@ module.exports = {
 				ephemeral: true
 			})
 		} catch (e) {
+			await logAction(`Updated nickname from ${user.nickname ?? user.name} to ${nickname}`, interaction);
+
 			return interaction.reply({
 				content: `We can't do that :c`,
 				ephemeral: true
