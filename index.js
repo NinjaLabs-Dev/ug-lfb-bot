@@ -1,4 +1,4 @@
-const { Client, Collection, GatewayIntentBits, ActivityFlagsBitField } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, ActivityFlagsBitField, Partials } = require('discord.js');
 const { logInfo, logError, logSuccess } = require("./helpers/log");
 const axios = require('axios');
 require('dotenv').config()
@@ -7,6 +7,9 @@ const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMembers
+	],
+	partials: [
+		Partials.GuildMember
 	],
 	presence: {
 		status: 'online'
