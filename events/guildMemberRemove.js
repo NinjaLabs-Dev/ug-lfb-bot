@@ -12,6 +12,8 @@ client.on("guildMemberRemove", async (member) => {
 		return logError("Log channel is set but can't be found!");
 	}
 
+	console.log("Person left ;(");
+
 	const fields = [
 		{ name: "Name", value: `${member.user.username}#${member.user.discriminator}`},
 		{ name: "Nickname", value: `${member.nickname ?? "No Nickname Set"}` }
