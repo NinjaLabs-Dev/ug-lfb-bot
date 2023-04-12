@@ -105,6 +105,7 @@ client.on("interactionCreate", async (interaction) => {
 		try {
 			await cmd.menuCallback(client, interaction)
 		} catch (e) {
+			console.log(e)
 			if(menuId.length > 1) {
 				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${menuName}/${action}, there was an issue running command.`)
 			} else {
