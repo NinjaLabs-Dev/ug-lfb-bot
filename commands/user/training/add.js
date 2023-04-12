@@ -75,7 +75,7 @@ module.exports = {
 				ephemeral: true
 			})
 		} else {
-			let user = getUser(id, interaction);
+			let user = await getUser(id, interaction);
 			await interaction.deferReply({ ephemeral: true });
 
 			for (const training of interaction.values) {
