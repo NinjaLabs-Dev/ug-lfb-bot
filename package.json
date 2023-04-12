@@ -10,6 +10,8 @@
   "author": "NinjaLabs-Dev",
   "license": "ISC",
   "dependencies": {
+    "@sentry/node": "^7.47.0",
+    "@sentry/tracing": "^7.47.0",
     "axios": "^0.27.2",
     "colors": "^1.4.0",
     "discord.js": "^14.8.0",

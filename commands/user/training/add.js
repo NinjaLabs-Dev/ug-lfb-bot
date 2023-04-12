@@ -43,7 +43,6 @@ module.exports = {
 		const menuName = menuId[0].split('-')[0];
 		const action = menuId[0].split('-')[1];
 		const type = menuId[1];
-		console.log(trainings)
 		const trainingOptions = trainings.map(t => {
 			return { name: t.name, value: t.key, label: t.name }
 		})
@@ -54,10 +53,6 @@ module.exports = {
 		if(!hasSelectedTraining) {
 			id = interaction.values[0]
 			let user = getUser(id, interaction);
-
-			console.log(id)
-			console.log(trainings)
-			console.log(trainingOptions)
 
 			const trainingSelectMenu = new StringSelectMenuBuilder()
 				.setCustomId(`training-add/user/${id}`)

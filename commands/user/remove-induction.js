@@ -1,6 +1,7 @@
 const { Client, CommandInteraction, EmbedBuilder, APIEmbedField } = require('discord.js');
 const commandType = require("../../commandTypes.json");
 const { getUnits, unitsLastUpdated, rankColors, trainings, log, getUser} = require('../../helpers');
+const client = require("../../index");
 
 module.exports = {
 	name: 'remove-induction',
@@ -49,6 +50,8 @@ module.exports = {
 		try {
 			await member.roles.remove(role);
 		} catch (e) {
+			client.sentry.captureException(e);
+
 			return interaction.reply({
 				content: `There was an issue completing this.`,
 				ephemeral: true
