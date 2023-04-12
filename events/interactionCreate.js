@@ -64,6 +64,8 @@ client.on("interactionCreate", async (interaction) => {
 			try {
 				await cmd.run(client, interaction, args);
 			} catch (e) {
+				client.sentry.captureException(e);
+
 				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, there was an issue running command.`)
 
 				return interaction.reply({
@@ -105,7 +107,8 @@ client.on("interactionCreate", async (interaction) => {
 		try {
 			await cmd.menuCallback(client, interaction)
 		} catch (e) {
-			console.log(e)
+			client.sentry.captureException(e);
+
 			if(menuId.length > 1) {
 				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${menuName}/${action}, there was an issue running command.`)
 			} else {

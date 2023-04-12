@@ -2,6 +2,8 @@ const { Client, Collection, GatewayIntentBits, ActivityFlagsBitField, Partials }
 const { logInfo, logError, logSuccess } = require("./helpers/log");
 const axios = require('axios');
 require('dotenv').config()
+const Sentry = require("@sentry/node");
+const Tracing = require("@sentry/tracing");
 
 const client = new Client({
 	intents: [
@@ -16,12 +18,26 @@ const client = new Client({
 	}
 });
 
+client.config = process.env;
+
+Sentry.init({
+	dsn: client.config.SENTRY_URL,
+	tracesSampleRate: 1.0,
+});
+
+client.sentry = Sentry;
+
+const transaction = Sentry.startTransaction({
+	op: "initial",
+	name: "Bot Startup",
+});
+
+
 module.exports = client;
 
 client.commands = new Collection();
 client.subCommands = new Collection();
 client.modals = new Collection();
-client.config = process.env;
 client.selectCache = new Collection();
 
 client.getDiscordUser = (id, guild = false) => {
@@ -47,7 +63,12 @@ client.login(client.config.TOKEN).then(r => {
 
 	logInfo("Client connected to Discord")
 
+	transaction.finish();
+
 	setInterval(() => {
-		axios.get('https://kuma.ninjalabs.dev/api/push/JFuK9sQ6wN?msg=OK&ping=')
+		axios.get(client.config.KUMA_URL)
+			.catch(() => {
+				console.log("Unable to update Kuma")
+			});
 	}, 60*1000)
 });
