@@ -28,7 +28,7 @@ module.exports = {
 	 * @param {String[]} args
 	 */
 	run: async (client, interaction, args) => {
-		let unit = await getUser(args[0], interaction);
+		let unit = await getUser(args.user, interaction);
 
 		if(!unit) {
 			return interaction.reply({
