@@ -54,6 +54,13 @@ module.exports = {
 			id = interaction.values[0]
 			let user = getUser(id, interaction);
 
+			if(!user) {
+				interaction.reply({
+					content: "We can't find that user!",
+					ephemeral: true
+				})
+			}
+
 			const trainingSelectMenu = new StringSelectMenuBuilder()
 				.setCustomId(`training-add/user/${id}`)
 				.setPlaceholder('Select training')
@@ -71,6 +78,14 @@ module.exports = {
 			})
 		} else {
 			let user = await getUser(id, interaction);
+
+			if(!user) {
+				interaction.reply({
+					content: "We can't find that user!",
+					ephemeral: true
+				})
+			}
+
 			await interaction.deferReply({ ephemeral: true });
 
 			for (const training of interaction.values) {

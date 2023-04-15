@@ -45,7 +45,7 @@ module.exports = {
 		}
 
 		let units = await getUnits();
-		let unit = await getUser(args[0], interaction);
+		let unit = await getUser(args[0].value, interaction);
 
 		if(!unit) {
 			return interaction.reply({
