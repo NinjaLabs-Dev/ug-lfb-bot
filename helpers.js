@@ -12,7 +12,7 @@ let trainings = [
 	{ name: 'First Aid', key: 'FIRSTAID' },
 	{ name: 'Water', key: 'WATER' },
 	{ name: 'RTC', key: 'RTC' },
-	{ name: 'Adv Driving', key: 'ADVDRIVING' },
+	{ name: 'Tech Veh', key: 'TECHVEH' },
 	{ name: 'Co-Pilot', key: 'COPILOT' },
 	{ name: 'Pilot', key: 'PILOT' },
 	{ name: 'SC', key: 'SC' },
