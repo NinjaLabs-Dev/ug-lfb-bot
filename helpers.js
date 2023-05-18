@@ -208,7 +208,7 @@ function capitalizeFirstLetter(string) {
 async function assignTraining(unit, training, interaction) {
 	let trainer = getUser(interaction.user.id, interaction);
 	if(!trainer) {
-		return interaction.reply({
+		return interaction.editReply({
 			content: "There was an error doing this.",
 			ephemeral: true
 		})
@@ -223,7 +223,6 @@ async function assignTraining(unit, training, interaction) {
 	let foundNumber = false
 	rows.forEach(row => {
 		if(!row['Unit'] && !foundNumber) {
-			console.log(row._rowNumber)
 			rowNumber = row._rowNumber;
 			foundNumber = true
 		}

@@ -25,7 +25,7 @@ module.exports = {
 		const actionUserRow = new ActionRowBuilder()
 			.addComponents(userSelectMenu)
 
-		interaction.reply({
+		await interaction.editReply({
 			content: "Select a User",
 			components: [actionUserRow],
 			ephemeral: true
@@ -36,6 +36,8 @@ module.exports = {
 	 * @param {UserSelectMenuInteraction} interaction
 	 */
 	menuCallback: async (client, interaction) => {
+		await interaction.deferReply({ ephemeral: true });
+
 		let units = await getUnits();
 
 		const menuId = interaction.customId.split('/');
@@ -60,7 +62,7 @@ module.exports = {
 			const actionTrainingRow = new ActionRowBuilder()
 				.addComponents(trainingSelectMenu)
 
-			return interaction.reply({
+			return interaction.editReply({
 				content: "Select a Training",
 				components: [actionTrainingRow],
 				ephemeral: true
@@ -88,7 +90,7 @@ module.exports = {
 						});
 					}
 
-					return interaction.reply({
+					return interaction.editReply({
 						embeds: [
 							new EmbedBuilder()
 								.setColor(rankColors[unit.rank])

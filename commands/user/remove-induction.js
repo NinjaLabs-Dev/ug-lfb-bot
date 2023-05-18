@@ -29,19 +29,14 @@ module.exports = {
 	 * @param {String[]} args
 	 */
 	run: async (client, interaction, args) => {
-		if(!args[0]) {
-			return interaction.reply({
-				content: `Hm, did you put a user?`,
-				ephemeral: true
-			})
-		}
-
-		let user = await client.users.fetch(args[0]);
+		let userId = args.find(arg => arg.name === "user").value
+		let user = await client.users.fetch(userId);
 		let member = await interaction.guild.members.fetch(user.id);
-		let role = await interaction.guild.roles.cache.find(r => r.id === process.env.INDUCTION_ROLE_ID);
+		let role = await interaction.guild.roles.cache.get(client.config.INDUCTION_ROLE_ID);
+		let hasRole = await interaction.member.roles.cache.has(client.config.INDUCTION_ROLE_ID);
 
-		if(!role) {
-			return interaction.reply({
+		if(!hasRole) {
+			return interaction.editReply({
 				content: `Hm, that person doesn't seem to have the induction role.`,
 				ephemeral: true
 			})
@@ -52,13 +47,13 @@ module.exports = {
 		} catch (e) {
 			client.sentry.captureException(e);
 
-			return interaction.reply({
+			return interaction.editReply({
 				content: `There was an issue completing this.`,
 				ephemeral: true
 			})
 		}
 
-		return interaction.reply({
+		return interaction.editReply({
 			content: `Removed induction role from ${user.tag}.`,
 			ephemeral: true
 		});

@@ -38,7 +38,7 @@ module.exports = {
 	 */
 	run: async (client, interaction, args) => {
 		if(!args[0]) {
-			return interaction.reply({
+			return interaction.editReply({
 				content: `Hm, did you put a callsign or user?`,
 				ephemeral: true
 			})
@@ -48,7 +48,7 @@ module.exports = {
 		let unit = await getUser(args[0], interaction);
 
 		if(!unit) {
-			return interaction.reply({
+			return interaction.editReply({
 				content: "Hm, we can't seem to find that user.",
 				ephemeral: true
 			});
@@ -69,7 +69,7 @@ module.exports = {
 		})
 
 		await logAction(`Searched [${unit.callsign}] ${unit.name}'s record`, interaction);
-		await interaction.reply({
+		await interaction.editReply({
 			embeds: [
 				new EmbedBuilder()
 					.setColor(rankColors[unit.rank])
