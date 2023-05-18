@@ -36,7 +36,7 @@ module.exports = {
 		const actionUserRow = new ActionRowBuilder()
 			.addComponents(userSelectMenu)
 
-		interaction.reply({
+		interaction.editReply({
 			content: "Select a User",
 			components: [actionUserRow],
 			ephemeral: true

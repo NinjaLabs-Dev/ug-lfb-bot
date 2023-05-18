@@ -7,7 +7,7 @@ const {StringSelectMenuBuilder, ActionRowBuilder, codeBlock, InteractionType} = 
 client.on("interactionCreate", async (interaction) => {
 	// Slash Command Handling
 	if (interaction.isCommand()) {
-		// await interaction.deferReply({ ephemeral: false }).catch(() => {});
+		await interaction.deferReply({ ephemeral: false }).catch(() => {});
 
 
 		if(interaction.guild.id !== process.env.GUILD_ID) {
@@ -65,10 +65,11 @@ client.on("interactionCreate", async (interaction) => {
 				await cmd.run(client, interaction, args);
 			} catch (e) {
 				client.sentry.captureException(e);
+				console.error(e)
 
 				logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, there was an issue running command.`)
 
-				return interaction.reply({
+				return interaction.editReply({
 					content: 'There was an issue doing this. Contact Support. \n Error: \n ' + codeBlock("text", e),
 					ephemeral: true
 				})
@@ -76,7 +77,7 @@ client.on("interactionCreate", async (interaction) => {
 		} else {
 			logInfo(`${getUserDisplayName(interaction)}: Attempted to run ${interaction.commandName}, they lack the permission.`)
 
-			return interaction.reply({ content: "You do not have permission to do that.", ephemeral: true });
+			return interaction.editReply({ content: "You do not have permission to do that.", ephemeral: true });
 		}
 	}
 
@@ -121,7 +122,7 @@ client.on("interactionCreate", async (interaction) => {
 					ephemeral: true
 				})
 			} else {
-				return interaction.reply({
+				return interaction.editReply({
 					content: 'There was an issue doing this. Contact Support. \n Error: \n ' + codeBlock("text", e),
 					ephemeral: true
 				})

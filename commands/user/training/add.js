@@ -27,7 +27,7 @@ module.exports = {
 		const actionUserRow = new ActionRowBuilder()
 			.addComponents(userSelectMenu)
 
-		interaction.reply({
+		await interaction.editReply({
 			content: "Select a User",
 			components: [actionUserRow],
 			ephemeral: true
@@ -38,6 +38,8 @@ module.exports = {
 	 * @param {UserSelectMenuInteraction} interaction
 	 */
 	menuCallback: async (client, interaction) => {
+		await interaction.deferReply({ ephemeral: true });
+
 		let units = await getUnits();
 		const menuId = interaction.customId.split('/');
 		const menuName = menuId[0].split('-')[0];
@@ -55,7 +57,7 @@ module.exports = {
 			let user = getUser(id, interaction);
 
 			if(!user) {
-				interaction.reply({
+				return interaction.editReply({
 					content: "We can't find that user!",
 					ephemeral: true
 				})
@@ -71,7 +73,7 @@ module.exports = {
 			const actionTrainingRow = new ActionRowBuilder()
 				.addComponents(trainingSelectMenu)
 
-			return interaction.reply({
+			return interaction.editReply({
 				content: "Select Trainings",
 				components: [actionTrainingRow],
 				ephemeral: true
@@ -80,13 +82,11 @@ module.exports = {
 			let user = await getUser(id, interaction);
 
 			if(!user) {
-				interaction.reply({
+				return interaction.editReply({
 					content: "We can't find that user!",
 					ephemeral: true
 				})
 			}
-
-			await interaction.deferReply({ ephemeral: true });
 
 			for (const training of interaction.values) {
 				let trainingPresent = hasTraining(user, training);

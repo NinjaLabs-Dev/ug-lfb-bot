@@ -31,7 +31,7 @@ module.exports = {
 		let unit = await getUser(args[0].value, interaction);
 
 		if(!unit) {
-			return interaction.reply({
+			return interaction.editReply({
 				content: "Hm, we can't seem to find that user.",
 				ephemeral: true
 			});
@@ -39,7 +39,7 @@ module.exports = {
 
 		console.log('[INFO] Getting raw user data for developer')
 
-		await interaction.reply({
+		await interaction.editReply({
 			content: codeBlock('json', JSON.stringify(unit, null, 4)),
 			ephemeral: true
 		})

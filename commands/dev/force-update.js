@@ -24,7 +24,7 @@ module.exports = {
 
 		console.log('[INFO] Data has been forcibly updated by developer')
 
-		await interaction.reply({
+		await interaction.editReply({
 			content: 'Data has been forcibly updated.',
 			ephemeral: true
 		})

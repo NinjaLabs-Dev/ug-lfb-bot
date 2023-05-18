@@ -19,7 +19,7 @@ module.exports = {
 	 * @param {String[]} args
 	 */
 	run: async (client, interaction, args) => {
-		await interaction.reply({
+		await interaction.editReply({
 			content: "I'm still alive!",
 			ephemeral: true
 		})

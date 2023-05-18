@@ -15,7 +15,7 @@ module.exports = {
 		let nickname = interaction.fields.getTextInputValue('nickname');
 
 		if(!user) {
-			return interaction.reply({
+			return interaction.editReply({
 				content: "We couldn't find that user!",
 				ephemeral: true
 			})
@@ -24,14 +24,14 @@ module.exports = {
 		try {
 			await user.setNickname(nickname)
 
-			return interaction.reply({
+			return interaction.editReply({
 				content: `Updated nickname!`,
 				ephemeral: true
 			})
 		} catch (e) {
 			await logAction(`Updated nickname from ${user.nickname ?? user.name} to ${nickname}`, interaction);
 
-			return interaction.reply({
+			return interaction.editReply({
 				content: `We can't do that :c`,
 				ephemeral: true
 			})
