@@ -7,7 +7,7 @@ const {StringSelectMenuBuilder, ActionRowBuilder, codeBlock, InteractionType} = 
 client.on("interactionCreate", async (interaction) => {
 	// Slash Command Handling
 	if (interaction.isCommand()) {
-		await interaction.deferReply({ ephemeral: false }).catch(() => {});
+		await interaction.deferReply({ ephemeral: true }).catch(() => {});
 
 
 		if(interaction.guild.id !== process.env.GUILD_ID) {
