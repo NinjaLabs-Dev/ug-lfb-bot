@@ -339,7 +339,7 @@ function getUser(term, interaction) {
 		return unit ?? false;
 	}
 
-	if(term.length === 18) {
+	if(term.length >= 18) {
 		let user = client.getDiscordUser(term, interaction.guild);
 
 		if(user) {
