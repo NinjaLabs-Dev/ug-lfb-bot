@@ -52,9 +52,7 @@ client.on("interactionCreate", async (interaction) => {
 			cmd = subCommand
 		}
 
-		if(cmd.ephemeral !== false) {
-			await interaction.deferReply({ ephemeral: true }).catch(() => {});
-		}
+		await interaction.deferReply({ ephemeral: cmd.ephemeral !== false }).catch(() => {});
 
 		const hasPermission = await cmd.hasPermission(client, interaction, args);
 
