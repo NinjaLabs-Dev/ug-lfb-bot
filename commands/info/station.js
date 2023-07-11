@@ -40,7 +40,7 @@ module.exports = {
 			.setImage(station.map)
 			.setColor(0xba1424);
 
-		return interaction.reply({
+		return interaction.editReply({
 			embeds: [
 				embed
 			],
