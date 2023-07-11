@@ -5,6 +5,7 @@ const {stations} = require("../../helpers");
 module.exports = {
 	name: 'station',
 	description: 'Show information of a station',
+	ephemeral: false,
 	type: commandType.CHAT_INPUT,
 	options: [
 		{
@@ -39,7 +40,7 @@ module.exports = {
 			.setImage(station.map)
 			.setColor(0xba1424);
 
-		return interaction.editReply({
+		return interaction.followUp({
 			embeds: [
 				embed
 			],
